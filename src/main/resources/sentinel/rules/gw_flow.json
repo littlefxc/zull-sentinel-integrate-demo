@@ -1,0 +1,13 @@
+[
+    {
+        "resource": "capacity-group-protocol-adaptor-consumer",
+        "count": 1,
+        "intervalSec": 20,
+        "paramItem": {
+            "parseStrategy": 3,
+            "matchStrategy": 0,
+            "fieldName": "accessToken",
+            "pattern": "325144132CC3BC7C433CD64C0BE98CC8"
+        }
+    }
+]
