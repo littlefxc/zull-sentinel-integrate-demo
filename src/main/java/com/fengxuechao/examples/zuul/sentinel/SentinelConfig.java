@@ -11,14 +11,23 @@ import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayParamFlowItem;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
 import com.alibaba.csp.sentinel.adapter.gateway.zuul.filters.SentinelZuulPreFilter;
+import com.alibaba.csp.sentinel.cluster.flow.rule.ClusterParamFlowRuleManager;
+import com.alibaba.csp.sentinel.cluster.server.config.ClusterServerConfigManager;
+import com.alibaba.csp.sentinel.property.DynamicSentinelProperty;
+import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRule;
+import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRuleManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.JedisCluster;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -34,21 +43,18 @@ import java.util.Set;
  */
 @Slf4j
 @Configuration
+@EnableConfigurationProperties({CustomSentinelProperties.class})
 public class SentinelConfig implements InitializingBean {
 
-    private static final String CHANNEL = "dev:chanel";
+    @Autowired
+    @Qualifier("sentinel-json-gw-flow-converter")
+    private JsonConverter jsonConverter;
 
-    private static final String RULE_KEY = "dev:rule_key";
+    @Autowired
+    private JedisCluster jedisCluster;
 
-    private final JsonConverter jsonConverter;
-
-    private final JedisCluster jedisCluster;
-
-    public SentinelConfig(@Qualifier("sentinel-json-gw-flow-converter")
-                                  JsonConverter jsonConverter, JedisCluster jedisCluster) {
-        this.jsonConverter = jsonConverter;
-        this.jedisCluster = jedisCluster;
-    }
+    @Autowired
+    private CustomSentinelProperties customSentinelProperties;
 
     /**
      * 自定义限流返回消息
@@ -66,14 +72,21 @@ public class SentinelConfig implements InitializingBean {
 
     /**
      * bean 创建完成后执行
+     * 1. 注册sentinel网关流控
+     * 2. 注册sentinel集群流控
      *
      * @throws Exception
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        JedisPushDataSource redisDataSource = new JedisPushDataSource<>(jsonConverter, jedisCluster, RULE_KEY, CHANNEL);
+        String gwFlowKey = customSentinelProperties.getGwFlowKey();
+        String gwFlowChanel = customSentinelProperties.getGwFlowChanel();
+        JedisPullDataSource redisDataSource = new JedisPullDataSource<>(jsonConverter, jedisCluster, gwFlowKey, gwFlowChanel);
+        // 网关流控无法做到集群流控的功能，不适配我们现有的业务，应当需自定义
         GatewayRuleManager.register2Property(redisDataSource.getProperty());
     }
+
+    /* 下面代码部分是测试时遗留的代码， */
 
     /**
      * 手动修改规则（硬编码方式）一般仅用于测试和演示，生产上一般通过动态规则源的方式来动态管理规则。
@@ -89,8 +102,6 @@ public class SentinelConfig implements InitializingBean {
         definitions.add(api1);
         GatewayApiDefinitionManager.loadApiDefinitions(definitions);
     }
-
-    /* 下面代码部分是测试时遗留的代码， */
 
     @Deprecated
 //    @PostConstruct

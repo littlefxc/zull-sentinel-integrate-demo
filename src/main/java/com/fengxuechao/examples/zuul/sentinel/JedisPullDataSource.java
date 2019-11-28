@@ -5,7 +5,6 @@ import com.alibaba.csp.sentinel.datasource.Converter;
 import com.alibaba.csp.sentinel.log.RecordLog;
 import com.alibaba.csp.sentinel.util.AssertUtil;
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisPubSub;
 
 /**
  * @author fengxuechao
