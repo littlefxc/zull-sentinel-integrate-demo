@@ -1,4 +1,4 @@
-package com.fengxuechao.examples.zuul.sentinel;
+package com.fengxuechao.examples.zuul.sentinel.constants;
 
 /**
  * 自定义配置使用 Sentinel 的常量

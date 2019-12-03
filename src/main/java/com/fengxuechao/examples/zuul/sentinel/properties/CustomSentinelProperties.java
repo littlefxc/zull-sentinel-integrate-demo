@@ -1,5 +1,6 @@
-package com.fengxuechao.examples.zuul.sentinel;
+package com.fengxuechao.examples.zuul.sentinel.properties;
 
+import com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelConstants;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

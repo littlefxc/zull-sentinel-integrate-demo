@@ -1,22 +1,17 @@
-package com.fengxuechao.examples.zuul.sentinel;
+package com.fengxuechao.examples.zuul.sentinel.datasource;
 
-import com.alibaba.csp.sentinel.datasource.AbstractDataSource;
+import com.alibaba.csp.sentinel.datasource.AutoRefreshDataSource;
 import com.alibaba.csp.sentinel.datasource.Converter;
 import com.alibaba.csp.sentinel.log.RecordLog;
 import com.alibaba.csp.sentinel.util.AssertUtil;
-import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisPubSub;
 
 /**
- * TODO 订阅频道时会阻塞程序的启动
- *
  * @author fengxuechao
  * @version 0.1
- * @date 2019/11/21
+ * @date 2019/11/22
  */
-@Slf4j
-public class JedisPushDataSource<T> extends AbstractDataSource<String, T> {
+public class JedisPullDataSource<T> extends AutoRefreshDataSource<String, T> {
 
     private final JedisCluster jedisCluster;
 
@@ -30,7 +25,7 @@ public class JedisPushDataSource<T> extends AbstractDataSource<String, T> {
      * @param channel      channel to subscribe in Redis
      * @param parser       customized data parser, cannot be empty
      */
-    public JedisPushDataSource(Converter<String, T> parser, JedisCluster jedisCluster, String ruleKey, String channel) {
+    public JedisPullDataSource(Converter<String, T> parser, JedisCluster jedisCluster, String ruleKey, String channel) {
         super(parser);
         AssertUtil.notNull(jedisCluster, "JedisCluster can not be null");
         AssertUtil.notEmpty(ruleKey, "Redis ruleKey can not be empty");
@@ -38,11 +33,6 @@ public class JedisPushDataSource<T> extends AbstractDataSource<String, T> {
         this.jedisCluster = jedisCluster;
         this.ruleKey = ruleKey;
         loadInitialConfig();
-        subscribeFromChannel(channel);
-    }
-
-    private void subscribeFromChannel(String channel) {
-        jedisCluster.subscribe(new DelegatingRedisPubSubListener(), channel);
     }
 
     private void loadInitialConfig() {
@@ -69,28 +59,5 @@ public class JedisPushDataSource<T> extends AbstractDataSource<String, T> {
             throw new IllegalStateException("JedisCluster has not been initialized or error occurred");
         }
         return jedisCluster.get(ruleKey);
-    }
-
-    /**
-     * Close the data source.
-     *
-     * @throws Exception IO or other error occurs
-     */
-    @Override
-    public void close() throws Exception {
-        jedisCluster.close();
-    }
-
-    private class DelegatingRedisPubSubListener extends JedisPubSub {
-
-        DelegatingRedisPubSubListener() {
-        }
-
-        @Override
-        public void onMessage(String channel, String message) {
-            RecordLog.info(String.format("[JedisClusterDataSource] New property value received for channel %s: %s", channel, message));
-            log.info("[JedisClusterDataSource] New property value received for channel {}: {}", channel, message);
-            getProperty().updateValue(parser.convert(message));
-        }
     }
 }

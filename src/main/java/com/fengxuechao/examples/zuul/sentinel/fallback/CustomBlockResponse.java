@@ -1,4 +1,4 @@
-package com.fengxuechao.examples.zuul.sentinel;
+package com.fengxuechao.examples.zuul.sentinel.fallback;
 
 import com.alibaba.csp.sentinel.adapter.gateway.zuul.fallback.BlockResponse;
 

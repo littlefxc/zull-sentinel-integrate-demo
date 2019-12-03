@@ -1,6 +1,6 @@
 package com.fengxuechao.examples.zuul;
 
-import com.fengxuechao.examples.zuul.sentinel.CustomSentinelProperties;
+import com.fengxuechao.examples.zuul.sentinel.properties.CustomSentinelProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
