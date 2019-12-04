@@ -58,8 +58,7 @@ public class SentinelGatewayFlowConfig implements InitializingBean {
 
     /**
      * bean 创建完成后执行
-     * 1. 注册sentinel网关流控
-     * 2. 注册sentinel集群流控
+     * 1. 注册sentinel网关流控, 但是网关流控不能应用集群流控
      *
      * @throws Exception
      */
