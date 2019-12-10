@@ -4,6 +4,7 @@ import com.alibaba.cloud.sentinel.datasource.converter.JsonConverter;
 import com.alibaba.cloud.sentinel.zuul.handler.FallBackProviderHandler;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
 import com.alibaba.csp.sentinel.adapter.gateway.zuul.filters.SentinelZuulPreFilter;
+import com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelConstants;
 import com.fengxuechao.examples.zuul.sentinel.datasource.JedisPullDataSource;
 import com.fengxuechao.examples.zuul.sentinel.fallback.CustomBlockResponse;
 import com.fengxuechao.examples.zuul.sentinel.fallback.CustomZuulBlockFallbackProvider;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +31,7 @@ import redis.clients.jedis.JedisCluster;
  */
 @Slf4j
 @Configuration
+@ConditionalOnProperty(prefix = CustomSentinelConstants.PREFIX, name = "enable-gateway-flow", havingValue = "true")
 @EnableConfigurationProperties({CustomSentinelProperties.class})
 public class SentinelGatewayFlowConfig implements InitializingBean {
 

@@ -40,6 +40,13 @@ public class App implements ApplicationRunner {
     @Autowired
     private CustomSentinelProperties customSentinelProperties;
 
+    /**
+     * 仅供测试,
+     * 用于限流规则推送到redis
+     *
+     * @param args
+     * @throws Exception
+     */
     @Override
     public void run(ApplicationArguments args) throws Exception {
         String json = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);

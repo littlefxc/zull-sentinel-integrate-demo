@@ -6,18 +6,8 @@
 # * 'mptr' and 'fptr' create a POST request to submit a form with a text or file field (multipart/form-data);
 
 ###
-GET http://192.168.200.19:8080/thirdOauth?params={"type":"fufu", "bizUserId":"test_001","bizAppKey":"zhejiang","bizAppSecret":"7HXoDDMV357UDrJuYRZyZyBj5Dg7mK", "bizPwd":"Z2V5ZUAyMDE4IQ=="}
-
-###
 GET http://192.168.120.81:8080/rest?accessToken=325144132CC3BC7C433CD64C0BE98CC8&appId=a52ea961f16cd7fb5206&method=capacity.geye.device.devUrl.get&v=2.0.0&timestamp=2019-06-27 09:53:23&sign=915EF0A25122CE6DE0ACDADF5443D93B&params={"account":"test_001","deviceNum":"33010100491327020550"}
 #GET http://192.168.200.19:13001/rest?accessToken=325144132CC3BC7C433CD64C0BE98CC8&appId=a52ea961f16cd7fb5206&method=capacity.geye.device.devUrl.get&v=2.0.0&timestamp=2019-06-27 09:53:23&sign=915EF0A25122CE6DE0ACDADF5443D93B&params={"account":"test_001","deviceNum":"33010100491327020550"}
-Accept: application/json
-
-###
-GET http://192.168.200.19:8080/thirdOauth?params={"type":"fufu", "bizUserId":"test_001","bizAppKey":"zhejiang","bizAppSecret":"7HXoDDMV357UDrJuYRZyZyBj5Dg7mK", "bizPwd":"Z2V5ZUAyMDE4IQ=="}
-
-### 实时统计调用量测试
-GET http://192.168.120.81:8080/rest?accessToken=325144132CC3BC7C433CD64C0BE98CC8&appId=a52ea961f16cd7fb5206&method=capacity.geye.device.devUrl.get&v=2.0.0&timestamp=2019-06-27 09:53:23&sign=915EF0A25122CE6DE0ACDADF5443D93B
 Accept: application/json
 
 ###
