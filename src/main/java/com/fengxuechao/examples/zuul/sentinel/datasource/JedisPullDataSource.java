@@ -22,14 +22,12 @@ public class JedisPullDataSource<T> extends AutoRefreshDataSource<String, T> {
      *
      * @param jedisCluster JedisCluster
      * @param ruleKey      data key in Redis
-     * @param channel      channel to subscribe in Redis
      * @param parser       customized data parser, cannot be empty
      */
-    public JedisPullDataSource(Converter<String, T> parser, JedisCluster jedisCluster, String ruleKey, String channel) {
+    public JedisPullDataSource(Converter<String, T> parser, JedisCluster jedisCluster, String ruleKey) {
         super(parser);
         AssertUtil.notNull(jedisCluster, "JedisCluster can not be null");
         AssertUtil.notEmpty(ruleKey, "Redis ruleKey can not be empty");
-        AssertUtil.notEmpty(channel, "Redis subscribe channel can not be empty");
         this.jedisCluster = jedisCluster;
         this.ruleKey = ruleKey;
         loadInitialConfig();

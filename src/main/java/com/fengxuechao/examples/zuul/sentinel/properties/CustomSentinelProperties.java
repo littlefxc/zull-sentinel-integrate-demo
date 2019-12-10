@@ -1,7 +1,6 @@
 package com.fengxuechao.examples.zuul.sentinel.properties;
 
 import com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelConstants;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -23,12 +22,22 @@ public class CustomSentinelProperties {
     private Boolean enableGatewayFlow = false;
 
     /**
-     * 缓存规则key
+     * 开启热点参数限流
      */
-    private String gwFlowKey = "dev:rule_key";
+    private Boolean enableParameterFlow = false;
+
+    /**
+     * 网关流控缓存 key
+     */
+    private String gateWayFlowKey = "dev:gateway_flow";
+
+    /**
+     * 热点参数缓存 key
+     */
+    private String parameterFlowKey = "dev:parameter_flow";
 
     /**
      * TODO 目前 jedisCluster 会阻塞程序的启动
      */
-    private String gwFlowChanel = "dev:chanel";
+    private String gateWayFlowChanelKey = "dev:chanel";
 }
