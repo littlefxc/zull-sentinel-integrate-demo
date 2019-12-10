@@ -1,30 +1,18 @@
 package com.fengxuechao.examples.zuul.sentinel;
 
 import com.alibaba.cloud.sentinel.datasource.converter.JsonConverter;
-import com.alibaba.cloud.sentinel.zuul.handler.FallBackProviderHandler;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
-import com.alibaba.csp.sentinel.adapter.gateway.zuul.filters.SentinelZuulPreFilter;
 import com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelConstants;
 import com.fengxuechao.examples.zuul.sentinel.datasource.JedisPullDataSource;
-import com.fengxuechao.examples.zuul.sentinel.fallback.CustomBlockResponse;
-import com.fengxuechao.examples.zuul.sentinel.fallback.CustomZuulBlockFallbackProvider;
 import com.fengxuechao.examples.zuul.sentinel.properties.CustomSentinelProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 import redis.clients.jedis.JedisCluster;
-
-import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -40,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 @Configuration
 @ConditionalOnProperty(prefix = CustomSentinelConstants.PREFIX_GATEWAY_FLOW, name = "enabled", havingValue = "true")
 @EnableConfigurationProperties({CustomSentinelProperties.class})
-public class SentinelGatewayFlowConfig implements InitializingBean, ApplicationRunner {
+public class SentinelGatewayFlowConfig implements InitializingBean {
 
     @Autowired
     @Qualifier("sentinel-json-gw-flow-converter")
@@ -51,20 +39,6 @@ public class SentinelGatewayFlowConfig implements InitializingBean, ApplicationR
 
     @Autowired
     private CustomSentinelProperties customSentinelProperties;
-
-    /**
-     * 自定义限流返回消息
-     * 与业务的返回消息保持一致
-     *
-     * @return CustomZuulBlockFallbackProvider
-     * @see CustomBlockResponse CustomBlockResponse 自定义 BlockResponse,重写 toString() 自定义返回消息
-     * @see FallBackProviderHandler FallBackProviderHandler 实现了接口 SmartInitializingSingleton，故此利用 Spring Bean 生命周期原理将默认的 ZuulBlockFallbackProvider 替换为自定义的返回限流处理
-     * @see SentinelZuulPreFilter SentinelZuulPreFilter 捕获 BlockException, 设置限流返回消息，也就是 CustomBlockResponse
-     */
-    @Bean
-    public CustomZuulBlockFallbackProvider customZuulBlockFallbackProvider() {
-        return new CustomZuulBlockFallbackProvider();
-    }
 
     /**
      * bean 创建完成后执行
@@ -79,22 +53,5 @@ public class SentinelGatewayFlowConfig implements InitializingBean, ApplicationR
         JedisPullDataSource redisDataSource = new JedisPullDataSource<>(jsonConverter, jedisCluster, gwFlowKey);
         // 网关流控无法做到集群流控的功能，不适配我们现有的业务，应当需自定义
         GatewayRuleManager.register2Property(redisDataSource.getProperty());
-    }
-
-    /* 仅供测试，缓存规则 */
-
-    @Value("classpath:/sentinel/rules/gw_flow.json")
-    private Resource resource;
-
-    /**
-     * Callback used to run the bean.
-     *
-     * @param args incoming application arguments
-     * @throws Exception on error
-     */
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-        String json = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
-        jedisCluster.set(customSentinelProperties.getGatewayFlow().getKey(), json);
     }
 }
