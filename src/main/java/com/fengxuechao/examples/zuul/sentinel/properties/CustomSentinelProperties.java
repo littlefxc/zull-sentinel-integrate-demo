@@ -2,6 +2,7 @@ package com.fengxuechao.examples.zuul.sentinel.properties;
 
 import com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelConstants;
 import lombok.Data;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 
@@ -17,27 +18,32 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class CustomSentinelProperties {
 
     /**
-     * 开启网关流控
+     * 网关流控配置
      */
-    private Boolean enableGatewayFlow = false;
+    private GatewayFlowProperties gatewayFlow = new GatewayFlowProperties();
 
     /**
-     * 开启热点参数限流
+     * 热点参数限流配置
      */
-    private Boolean enableParameterFlow = false;
+    private ParameterFlowProperties parameterFlow = new ParameterFlowProperties();
 
     /**
-     * 网关流控缓存 key
+     * 集群限流-热点参数限流配置
      */
-    private String gateWayFlowKey = "dev:gateway_flow";
+    private ClusterParameterFlowProperties clusterParameterFlow = new ClusterParameterFlowProperties();
 
-    /**
-     * 热点参数缓存 key
-     */
-    private String parameterFlowKey = "dev:parameter_flow";
+    @ConfigurationProperties(CustomSentinelConstants.PREFIX_GATEWAY_FLOW)
+    public GatewayFlowProperties getGatewayFlow() {
+        return gatewayFlow;
+    }
 
-    /**
-     * TODO 目前 jedisCluster 会阻塞程序的启动
-     */
-    private String gateWayFlowChanelKey = "dev:chanel";
+    @ConfigurationProperties(CustomSentinelConstants.PREFIX_PARAMETER_FLOW)
+    public ParameterFlowProperties getParameterFlow() {
+        return parameterFlow;
+    }
+
+    @ConfigurationProperties(CustomSentinelConstants.PREFIX_CLUSTER_PARAMETER_FLOW)
+    public ClusterParameterFlowProperties getClusterParameterFlow() {
+        return clusterParameterFlow;
+    }
 }

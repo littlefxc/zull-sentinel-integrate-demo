@@ -2,14 +2,8 @@ package com.fengxuechao.examples.zuul.sentinel;
 
 import com.alibaba.cloud.sentinel.datasource.converter.JsonConverter;
 import com.alibaba.cloud.sentinel.zuul.handler.FallBackProviderHandler;
-import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
 import com.alibaba.csp.sentinel.adapter.gateway.zuul.filters.SentinelZuulPreFilter;
-import com.alibaba.csp.sentinel.slots.block.RuleConstant;
-import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowItem;
-import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRule;
 import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRuleManager;
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelConstants;
 import com.fengxuechao.examples.zuul.sentinel.datasource.JedisPullDataSource;
 import com.fengxuechao.examples.zuul.sentinel.fallback.CustomBlockResponse;
@@ -34,8 +28,8 @@ import org.springframework.core.io.Resource;
 import redis.clients.jedis.JedisCluster;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
+
+import static com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelConstants.FILTER_ORDER_SENTINEL_PARAMETER_FLOW;
 
 /**
  * This pre-filter will regard all {@code proxyId} and all customized API as resources.
@@ -47,7 +41,7 @@ import java.util.List;
  */
 @Slf4j
 @Configuration
-@ConditionalOnProperty(prefix = CustomSentinelConstants.PREFIX, name = "enable-parameter-flow", havingValue = "true")
+@ConditionalOnProperty(prefix = CustomSentinelConstants.PREFIX_PARAMETER_FLOW, name = "enabled", havingValue = "true")
 @EnableConfigurationProperties({CustomSentinelProperties.class})
 public class SentinelParameterFlowConfig implements InitializingBean, ApplicationRunner {
 
@@ -64,12 +58,12 @@ public class SentinelParameterFlowConfig implements InitializingBean, Applicatio
 
     @Bean
     public SentinelParameterFlowZuulPreFilter sentinelParameterFlowZuulPreFilter() {
-        return new SentinelParameterFlowZuulPreFilter(9999);
+        return new SentinelParameterFlowZuulPreFilter(FILTER_ORDER_SENTINEL_PARAMETER_FLOW);
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        String parameterFlowKey = customSentinelProperties.getParameterFlowKey();
+        String parameterFlowKey = customSentinelProperties.getParameterFlow().getKey();
         JedisPullDataSource redisDataSource = new JedisPullDataSource<>(jsonConverter, jedisCluster, parameterFlowKey);
         ParamFlowRuleManager.register2Property(redisDataSource.getProperty());
     }
@@ -111,6 +105,6 @@ public class SentinelParameterFlowConfig implements InitializingBean, Applicatio
     public void run(ApplicationArguments args) throws Exception {
         // 热点参数限流规则
         String json = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
-        jedisCluster.set(customSentinelProperties.getParameterFlowKey(), json);
+        jedisCluster.set(customSentinelProperties.getParameterFlow().getKey(), json);
     }
 }
