@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * 自定义限流配置类
+ *
  * @author fengxuechao
  * @version 0.1
  * @date 2019/12/10

@@ -48,11 +48,11 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-datasource-consul</artifactId>
             <version>1.7.0</version>
-        </dependency>
+        </dependency>-->
         <!-- consul服务发现 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

@@ -15,12 +15,22 @@
     "maxQueueingTimeMs": 0,
     "paramFlowItemList": [
       {
+        "classType": "int",
+        "count": 3,
+        "object": 12
+      },
+      {
         "classType": "java.lang.String",
         "count": 2,
         "object": "a52ea961f16cd7fb5206"
+      },
+      {
+        "classType": "int",
+        "count": 1,
+        "object": 13
       }
     ],
-    "paramIdx": 0,
+    "paramIdx": 1,
     "resource": "capacity-group-protocol-adaptor-consumer"
   }
 ]

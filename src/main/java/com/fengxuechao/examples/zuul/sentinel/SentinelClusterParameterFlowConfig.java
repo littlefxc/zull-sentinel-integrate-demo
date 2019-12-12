@@ -2,6 +2,7 @@ package com.fengxuechao.examples.zuul.sentinel;
 
 import com.alibaba.cloud.sentinel.datasource.converter.JsonConverter;
 import com.alibaba.cloud.sentinel.zuul.SentinelZuulProperties;
+import com.alibaba.csp.sentinel.adapter.gateway.zuul.filters.SentinelZuulPreFilter;
 import com.alibaba.csp.sentinel.cluster.ClusterStateManager;
 import com.alibaba.csp.sentinel.cluster.client.config.ClusterClientAssignConfig;
 import com.alibaba.csp.sentinel.cluster.client.config.ClusterClientConfig;
@@ -14,7 +15,7 @@ import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRule;
 import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRuleManager;
 import com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelConstants;
 import com.fengxuechao.examples.zuul.sentinel.datasource.JedisPullDataSource;
-import com.fengxuechao.examples.zuul.sentinel.filter.SentinelClusterParameterFlowZuulPreFilter;
+import com.fengxuechao.examples.zuul.sentinel.filter.SentinelParameterFlowZuulPreFilter;
 import com.fengxuechao.examples.zuul.sentinel.filter.SentinelZuulErrorFilter;
 import com.fengxuechao.examples.zuul.sentinel.filter.SentinelZuulPostFilter;
 import com.fengxuechao.examples.zuul.sentinel.properties.CustomSentinelProperties;
@@ -31,7 +32,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import redis.clients.jedis.JedisCluster;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelConstants.FILTER_ORDER_SENTINEL_CLUSTER_PARAMETER_FLOW;
@@ -61,8 +61,10 @@ public class SentinelClusterParameterFlowConfig implements InitializingBean {
     private String namespace;
 
     @Bean
-    public SentinelClusterParameterFlowZuulPreFilter sentinelParameterFlowZuulPreFilter() {
-        return new SentinelClusterParameterFlowZuulPreFilter(FILTER_ORDER_SENTINEL_CLUSTER_PARAMETER_FLOW);
+    public SentinelParameterFlowZuulPreFilter sentinelParameterFlowZuulPreFilter() {
+        log.info("[Sentinel Zuul] register SentinelZuulPreFilter {}",
+                zuulProperties.getOrder().getPre());
+        return new SentinelParameterFlowZuulPreFilter(zuulProperties.getOrder().getPre());
     }
 
     @Autowired
