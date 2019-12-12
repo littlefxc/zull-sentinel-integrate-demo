@@ -1,7 +1,13 @@
 [
   {
     "burstCount": 0,
-    "clusterMode": false,
+    "clusterMode": true,
+    "clusterConfig": {
+      "flowId": 1,
+      "thresholdType": 1,
+      "fallbackToLocalWhenFail": true,
+      "windowIntervalMs": 10
+    },
     "controlBehavior": 0,
     "count": 2.0,
     "durationInSec": 20,
@@ -9,22 +15,12 @@
     "maxQueueingTimeMs": 0,
     "paramFlowItemList": [
       {
-        "classType": "int",
-        "count": 3,
-        "object": 12
-      },
-      {
         "classType": "java.lang.String",
         "count": 2,
         "object": "a52ea961f16cd7fb5206"
-      },
-      {
-        "classType": "int",
-        "count": 1,
-        "object": 13
       }
     ],
-    "paramIdx": 1,
+    "paramIdx": 0,
     "resource": "capacity-group-protocol-adaptor-consumer"
   }
 ]

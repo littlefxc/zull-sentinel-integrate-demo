@@ -1,8 +1,8 @@
 package com.fengxuechao.examples.zuul.sentinel.properties;
 
 import com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelConstants;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Data;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 
@@ -17,6 +17,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(CustomSentinelConstants.PREFIX)
 public class CustomSentinelProperties {
 
+    private Boolean enabled = false;
+
     /**
      * 网关流控配置
      */
@@ -28,7 +30,12 @@ public class CustomSentinelProperties {
     private ParameterFlowProperties parameterFlow = new ParameterFlowProperties();
 
     /**
-     * 集群限流-热点参数限流配置
+     * 集群限流 - 客户端/服务端配置
+     */
+    private ClusterProperties cluster = new ClusterProperties();
+
+    /**
+     * 集群限流 - 热点参数限流配置
      */
     private ClusterParameterFlowProperties clusterParameterFlow = new ClusterParameterFlowProperties();
 
@@ -45,5 +52,10 @@ public class CustomSentinelProperties {
     @ConfigurationProperties(CustomSentinelConstants.PREFIX_CLUSTER_PARAMETER_FLOW)
     public ClusterParameterFlowProperties getClusterParameterFlow() {
         return clusterParameterFlow;
+    }
+
+    @ConfigurationProperties(CustomSentinelConstants.PREFIX_CLUSTER_CLIENT)
+    public ClusterProperties getCluster() {
+        return cluster;
     }
 }

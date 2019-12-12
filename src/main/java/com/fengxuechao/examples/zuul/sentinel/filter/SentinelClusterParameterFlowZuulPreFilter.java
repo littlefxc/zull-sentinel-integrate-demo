@@ -1,9 +1,6 @@
 package com.fengxuechao.examples.zuul.sentinel.filter;
 
-import com.alibaba.csp.sentinel.AsyncEntry;
-import com.alibaba.csp.sentinel.EntryType;
-import com.alibaba.csp.sentinel.ResourceTypeConstants;
-import com.alibaba.csp.sentinel.SphU;
+import com.alibaba.csp.sentinel.*;
 import com.alibaba.csp.sentinel.adapter.gateway.common.param.GatewayParamParser;
 import com.alibaba.csp.sentinel.adapter.gateway.zuul.RequestContextItemParser;
 import com.alibaba.csp.sentinel.adapter.gateway.zuul.constants.ZuulConstant;
@@ -63,16 +60,10 @@ public class SentinelClusterParameterFlowZuulPreFilter extends ZuulFilter {
 
     private void doSentinelEntry(String resourceName, RequestContext requestContext,
                                  Deque<EntryHolder> holders) throws BlockException {
-        // TODO 结合业务的3个维度，可以分为 apiId, appId, userId
-        Object[] params = new Object[3];
-        // TODO 根据 method, v 从缓存中读取 apiId. 如果要 apiId 维度的规则生效，则 paramIdx = 0
-        params[0] = 12;
-        // 如果要 appId 维度的规则生效，则 paramIdx = 1
-        params[1] = requestContext.getRequest().getParameter("appId");
-        // TODO 根据 appId 从缓存中读取 userId. 如果要 userId 维度的规则生效，则 paramIdx = 2
-        params[2] = 13;
-
+        Object[] params = new Object[1];
+        params[0] = requestContext.getRequest().getParameter("appId");
         AsyncEntry entry = SphU.asyncEntry(resourceName, ResourceTypeConstants.COMMON_WEB, EntryType.IN, params);
+//        Entry entry = SphU.entry(resourceName, EntryType.OUT, 1, params);
         EntryHolder holder = new EntryHolder(entry, params);
         holders.push(holder);
     }

@@ -37,14 +37,25 @@ public class App implements ApplicationRunner {
     @Autowired
     private JedisCluster jedisCluster;
 
+    /**
+     * 热点参数限流规则
+     */
     @Value("classpath:/sentinel/rules/parameter_flow.json")
     private Resource parameterFlow;
+
+    /**
+     * 网关流控规则
+     */
+    @Value("classpath:/sentinel/rules/gw_flow.json")
+    private Resource gatewayFlow;
+
+    /* 集群限流规则 */
 
     @Value("classpath:/sentinel/rules/cluster_parameter_flow.json")
     private Resource clusterParameterFlow;
 
-    @Value("classpath:/sentinel/rules/gw_flow.json")
-    private Resource gatewayFlow;
+    @Value("${spring.application.name}")
+    private String namespace;
 
     /**
      * Callback used to run the bean.
@@ -60,14 +71,14 @@ public class App implements ApplicationRunner {
             jedisCluster.set(customSentinelProperties.getParameterFlow().getKey(), json);
         }
         {
-            // 集群限流-热点参数限流规则
-            String json = IOUtils.toString(clusterParameterFlow.getInputStream(), StandardCharsets.UTF_8);
-            jedisCluster.set(customSentinelProperties.getClusterParameterFlow().getKey(), json);
-        }
-        {
             // 网关流控限流规则
             String json = IOUtils.toString(gatewayFlow.getInputStream(), StandardCharsets.UTF_8);
             jedisCluster.set(customSentinelProperties.getGatewayFlow().getKey(), json);
+        }
+        {
+            // 集群限流规则
+            String json = IOUtils.toString(clusterParameterFlow.getInputStream(), StandardCharsets.UTF_8);
+            jedisCluster.set(namespace, json);
         }
     }
 }

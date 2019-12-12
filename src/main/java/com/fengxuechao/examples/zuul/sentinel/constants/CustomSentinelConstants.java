@@ -14,6 +14,8 @@ public interface CustomSentinelConstants {
 
     String PREFIX_PARAMETER_FLOW = PREFIX + ".parameter-flow";
 
+    String PREFIX_CLUSTER_CLIENT = PREFIX + ".cluster";
+
     String PREFIX_CLUSTER_PARAMETER_FLOW = PREFIX + ".cluster-parameter-flow";
 
     /**
@@ -25,4 +27,5 @@ public interface CustomSentinelConstants {
      * 热点参数限流过滤器的默认优先级
      */
     int FILTER_ORDER_SENTINEL_PARAMETER_FLOW = 9999;
+
 }
