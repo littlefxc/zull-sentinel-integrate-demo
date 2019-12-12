@@ -20,8 +20,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.JedisCluster;
 
-import static com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelConstants.FILTER_ORDER_SENTINEL_PARAMETER_FLOW;
-
 /**
  * This pre-filter will regard all {@code proxyId} and all customized API as resources.
  * When a BlockException caught, the filter will try to find a fallback to execute.
@@ -36,6 +34,9 @@ import static com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelCon
 @EnableConfigurationProperties({CustomSentinelProperties.class, SentinelZuulProperties.class})
 public class SentinelParameterFlowConfig implements InitializingBean {
 
+    /**
+     * 热点参数规则转换器
+     */
     @Autowired
     @Qualifier("sentinel-json-param-flow-converter")
     private JsonConverter jsonConverter;
@@ -49,11 +50,23 @@ public class SentinelParameterFlowConfig implements InitializingBean {
     @Autowired
     private SentinelZuulProperties zuulProperties;
 
+    /**
+     * pre filter
+     *
+     * @return
+     */
     @Bean
     public SentinelParameterFlowZuulPreFilter sentinelParameterFlowZuulPreFilter() {
-        return new SentinelParameterFlowZuulPreFilter(FILTER_ORDER_SENTINEL_PARAMETER_FLOW);
+        log.info("[Sentinel Zuul] register SentinelZuulPreFilter {}",
+                zuulProperties.getOrder().getPre());
+        return new SentinelParameterFlowZuulPreFilter(zuulProperties.getOrder().getPre());
     }
 
+    /**
+     * post filter
+     *
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean
     public SentinelZuulPostFilter sentinelZuulPostFilter() {
@@ -62,6 +75,11 @@ public class SentinelParameterFlowConfig implements InitializingBean {
         return new SentinelZuulPostFilter(zuulProperties.getOrder().getPost());
     }
 
+    /**
+     * error filter
+     *
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean
     public SentinelZuulErrorFilter sentinelZuulErrorFilter() {
@@ -70,6 +88,11 @@ public class SentinelParameterFlowConfig implements InitializingBean {
         return new SentinelZuulErrorFilter(zuulProperties.getOrder().getError());
     }
 
+    /**
+     * 热点参数规则
+     *
+     * @throws Exception
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
         String parameterFlowKey = customSentinelProperties.getParameterFlow().getKey();

@@ -2,7 +2,6 @@ package com.fengxuechao.examples.zuul.sentinel;
 
 import com.alibaba.cloud.sentinel.datasource.converter.JsonConverter;
 import com.alibaba.cloud.sentinel.zuul.SentinelZuulProperties;
-import com.alibaba.csp.sentinel.adapter.gateway.zuul.filters.SentinelZuulPreFilter;
 import com.alibaba.csp.sentinel.cluster.ClusterStateManager;
 import com.alibaba.csp.sentinel.cluster.client.config.ClusterClientAssignConfig;
 import com.alibaba.csp.sentinel.cluster.client.config.ClusterClientConfig;
@@ -29,12 +28,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import redis.clients.jedis.JedisCluster;
 
 import java.util.List;
-
-import static com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelConstants.FILTER_ORDER_SENTINEL_CLUSTER_PARAMETER_FLOW;
 
 /**
  * This pre-filter will regard all {@code proxyId} and all customized API as resources.
@@ -50,6 +46,9 @@ import static com.fengxuechao.examples.zuul.sentinel.constants.CustomSentinelCon
 @EnableConfigurationProperties({CustomSentinelProperties.class, SentinelZuulProperties.class})
 public class SentinelClusterParameterFlowConfig implements InitializingBean {
 
+    /**
+     * 规则转换类
+     */
     @Autowired
     @Qualifier("sentinel-json-param-flow-converter")
     private JsonConverter jsonConverter;
@@ -57,9 +56,17 @@ public class SentinelClusterParameterFlowConfig implements InitializingBean {
     @Autowired
     private JedisCluster jedisCluster;
 
+    /**
+     * 集群限流规则的命名空间，默认为服务名
+     */
     @Value("${spring.application.name}")
     private String namespace;
 
+    /**
+     * pre filter
+     *
+     * @return
+     */
     @Bean
     public SentinelParameterFlowZuulPreFilter sentinelParameterFlowZuulPreFilter() {
         log.info("[Sentinel Zuul] register SentinelZuulPreFilter {}",
@@ -70,6 +77,11 @@ public class SentinelClusterParameterFlowConfig implements InitializingBean {
     @Autowired
     private SentinelZuulProperties zuulProperties;
 
+    /**
+     * post filter
+     *
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean
     public SentinelZuulPostFilter sentinelZuulPostFilter() {
@@ -78,6 +90,11 @@ public class SentinelClusterParameterFlowConfig implements InitializingBean {
         return new SentinelZuulPostFilter(zuulProperties.getOrder().getPost());
     }
 
+    /**
+     * error filter
+     *
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean
     public SentinelZuulErrorFilter sentinelZuulErrorFilter() {
@@ -143,7 +160,7 @@ public class SentinelClusterParameterFlowConfig implements InitializingBean {
     private Integer tokenClientPort;
 
     /**
-     * 集群限流 - 客户端分配配置
+     * 集群限流 - 客户端分配配置，实质是指定服务端 ip 和 port
      */
     private void initClientServerAssignProperty() {
         ClusterClientAssignConfig clusterClientAssignConfig = new ClusterClientAssignConfig(tokenServerIp, tokenServerPort);
@@ -159,9 +176,6 @@ public class SentinelClusterParameterFlowConfig implements InitializingBean {
         //加载配置
         ClusterServerConfigManager.loadGlobalTransportConfig(serverTransportConfig);
     }
-
-    @Autowired
-    Environment environment;
 
     /**
      * 初始化集群限流服务端的状态
